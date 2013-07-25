@@ -1,0 +1,39 @@
+application: corporatetwitnews
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+libraries:
+- name: jinja2
+  version: latest
+- name: lxml
+  version: latest
+
+builtins:
+- remote_api: on
+- appstats: on
+- deferred: on
+
+handlers:
+- url: /update.*
+  script: main.app
+  login: admin
+- url: /crunch
+  script: crunch.app
+  login: admin
+- url: /(favicon\.ico)
+  static_files: static/\1
+  upload: static/favicon\.ico
+- url: /static
+  static_dir: static
+- url: /edit.*
+  script: main.app
+  login: admin
+- url: /.*
+  script: main.app
+
+admin_console:
+  pages:
+  - name: appstats
+    url: /stats

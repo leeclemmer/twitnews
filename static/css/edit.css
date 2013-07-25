@@ -1,0 +1,83 @@
+body {
+	font-size:1.2em;
+	font-family: Arial, sans;
+}
+
+#wrapper {	
+	width:1000px;
+	margin:0 auto;
+}
+
+h1 {
+	font-family: arial, sans;
+	font-size:1.3em;
+}
+
+.count {
+	float:left;
+	margin-left:-2.4em;
+	margin-top: -2px;
+	font-size:1.2em;
+	font-style: italic;
+	color:#ccc;
+}
+
+.title a {
+	font-size: 1.2em;
+	margin-right:0.5em;
+}
+
+.domain {
+	font-size:0.8em;
+	color:#bbb;
+}
+
+.domain img {
+	margin-right:0.5em;
+	width:12px;
+	height:12px;
+}
+
+a {
+	margin-top:-1em;
+	text-decoration: none;
+	color:black;
+}
+
+ul {
+	/*-webkit-padding-start:3em;*/
+	padding-left:78px;
+	margin-top:65px;
+	list-style-type:none;
+}
+
+ul.cluster {
+	padding:0;
+}
+
+li {
+	margin-left:0;
+	margin-bottom:40px;
+}
+
+li.clusteritem {
+	font-size:0.7em;
+	padding-left:38px;
+}
+
+ul.cluster li:first-child {
+	padding-left:0;
+	margin-bottom:20px;
+	font-size:1em;
+}
+
+#edit input[type=text] {
+	width:500px;
+}
+
+/* For iPhone */
+@media only screen and (max-device-width: 480px) {
+    body {
+    	font-size:1.6em;
+    }
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html>
+		<head>
+			<title>Update</title>
+
+			<style type="text/css">
+			body {
+				font-family: arial, sans;
+			}
+
+			h1 {
+				margin-bottom:0;
+			}
+
+			p {
+				margin-top:-0.1em;
+				margin-bottom:2em;
+			}
+
+			img {
+				float:left;
+				margin-right:0.5em;
+			}
+
+			.status {
+				margin-bottom:2em;
+			}
+
+			.status ul {
+				list-style-type: none;
+				margin-left:1em;
+			}
+
+			.time {
+				font-size:0.9em;
+				color:grey;
+				float:right;
+				padding-left:10px;
+			}
+
+			.error {
+				color:red;
+			}
+			</style>
+		</head>	
+
+		<body>
+			<a href="/">Home</a> | <a href="/edit">Edit</a> | <a href="/update">Update</a> | <a href="/debug">Debug</a><br/><br/>
+		
+			<h1>Update</h1>
+			<span class='error'>{{error}}</span>
+			<p>
+				Number of statuses: {{numstatuses}}<br/>
+				Number of URLs: {{numurls}}<br/>
+				Number of tasks: {{numtasks}}
+			</p>
+
+			{% for status in statuses %}
+				<div class="status">
+					<img src="{{status['user']['profile_image_url_https']}}"/>
+					<b>{{status['user']['screen_name']}}: </b>
+					{{status['text']}}
+					<ul>
+					{% for url in status['entities']['urls'] %}
+						<li><a href="{{url['expanded_url']}}">{{url['expanded_url']}}</a></li>
+					{% endfor %}
+					{% if status['retweeted_status'] %}
+						{% for url in status['retweeted_status']['entities']['urls'] %}
+							<li><a href="{{url['expanded_url']}}">{{url['expanded_url']}}</a></li>
+						{% endfor %}
+					{% endif %}
+					</ul>
+				</div>
+			{% endfor %}
+
+
+		</body>
+
+</html>

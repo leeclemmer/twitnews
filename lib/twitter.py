@@ -1,0 +1,155 @@
+import urllib
+import urllib2
+import base64
+import json
+import logging
+import sys
+import time
+
+class TwitterSearch():
+	RESOURCE_URL = 'https://api.twitter.com/oauth2/token'
+	BEARER_TOKEN = ''
+
+	def __init__(self,key,secret):
+		self.BEARER_TOKEN = self.__bearerToken(key,secret)
+		return None
+
+	def __bearerToken(self, consumer_key, consumer_secret):
+		'''
+		Returns bearer token for Twitter Application-only authentication.
+		Full documentation: https://dev.twitter.com/docs/auth/application-only-auth
+
+		Requires Twitter app consumer key and consumer secret.
+		'''
+		# Step 1.1: URL encode key and secret
+		consumer_key = urllib.quote_plus(consumer_key,'+')
+		consumer_secret = urllib.quote_plus(consumer_secret,'+')
+
+		# Step 1.2: Concatenate key and secret
+		credentials = consumer_key + ':' + consumer_secret
+
+		# Step 1.3: Base64 encode the credentials
+		credentials = base64.b64encode(credentials)
+
+		# Step 2: Obtain a bearer token
+		headers = {'Authorization':'Basic %s' % (credentials,),
+					  'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8',
+					  'User-Agent': 'Lee Clemmer (@leeclemmer) for app corporatetwitnews @ corporatetwitnews.appspot.com'}
+		data = urllib.urlencode({'grant_type':'client_credentials'})
+		request = urllib2.Request(self.RESOURCE_URL, data, headers)
+		
+		# Let's try the request
+		bearer_token = None
+		try:
+			response = urllib2.urlopen(request).read()
+			if response: 
+				# We've got a response, let's turn it to JSON and...
+				response = json.loads(response)
+
+				# ...see if it has the bearer token
+				if response['token_type'] == 'bearer':
+					# If yes, return it... and we're done!
+					return response['access_token']
+				else: 
+					logging.error('_Token response type is not bearer. It\'s %s' % (response['token_type'],))
+		except:
+			e = sys.exc_info()[1]
+			logging.error('_Error: %s' % (e,))
+
+		# Return None if no bearer token was fetched
+		return None
+
+	def request(self,url,headers={},data={}):
+		if not 'Authorization' in headers:
+			bearer_token = self.BEARER_TOKEN
+			headers['Authorization'] = 'Basic %s' % (bearer_token,)
+		return urllib2.Request(url, urllib.urlencode(data),headers)
+
+	def search(self, q, 
+					   geocode='',
+					   lang='en',
+					   locale='',
+					   result_type='',
+					   count=15,
+					   until='',
+					   since_id='',
+					   max_id='',
+					   include_entities='',
+					   callback='',
+					   linksonly=True,
+					   fetch_until=None):
+		'''
+		Interface to Twitter Search API v1.1
+		Full documentation: https://dev.twitter.com/docs/api/1.1/get/search/tweets
+
+		Takes a search string q and optionally takes a list of parameters.
+		'''
+		# Construct Header
+		headers = {'Authorization':'Bearer %s' % (self.BEARER_TOKEN,),
+					'User-Agent': 'Lee Clemmer (@leeclemmer) for app corporatetwitnews @ corporatetwitnews.appspot.com'}
+		
+		# Construct URL
+		url = 'https://api.twitter.com/1.1/search/tweets.json?q=' + urllib.quote_plus(q)
+		if linksonly: url = '%s%%20filter:links' % (url,)
+		if geocode: url += '&geocode=%s' % (geocode,)
+		if lang: url += '&lang=%s' % (lang,)
+		if locale: url += '&locale=%s' % (locale,)
+		if result_type: url += '&result_type=%s' % (result_type,)
+		if count: url += '&count=%s' % (count,)
+		if until: url += '&until=%s' % (until,)
+		if since_id: url += '&since_id=%s' % (since_id,)
+		if max_id: url += '&max_id=%s' % (max_id,)
+		if include_entities: url += '&include_entities=%s' % (include_entities,)
+		if callback: url += '&callback=%s' % (callback,)
+
+		# Get request
+		#request = self.request(url,headers)
+		request = urllib2.Request(url, headers=headers)
+		try:
+			response = urllib2.urlopen(request).read()
+			if response: 
+				response_json = json.loads(response)
+
+				# Log that summary son
+				self.summary(response_json)
+
+				# If we passed a status ID to go until, see if we've reached it yet
+				# by comparing it to the ID of the last status in result
+				last_status_id = int(response_json['statuses'][-1]['id'])
+				if fetch_until and last_status_id > fetch_until:
+					logging.info('...sleepy...')
+					time.sleep(.5)
+
+					# Recursion up in this bitch
+					response_json['statuses'] =  response_json['statuses'] + self.search(q, geocode=geocode,
+															   	lang=lang,
+															    locale=locale,
+															    result_type=result_type,
+															    count=count,
+															    until=until,
+															    since_id=since_id,
+															    max_id=last_status_id-1,
+															    include_entities=include_entities,
+															    callback=callback,
+															    linksonly=linksonly,
+															    fetch_until=fetch_until)['statuses']
+				return response_json
+			else:
+				logging.error('[in __search]: Didn\'t get response. Request:%s' % (request,))
+		except:
+			e = sys.exc_info()[1]
+			logging.error('Twitter response error: %s' % (e,))
+
+		return None
+
+	def summary(self, response):
+		''' 
+		Takes the response JSON generated by .search and logs it
+		'''
+		if response:
+			summary = response['search_metadata']
+			logging.info('\nTwitter search summary: %s items fetched in %s seconds.\nmax_id: %s | since_id: %s' %
+						 (summary['count'],summary['completed_in'],summary['max_id_str'],summary['since_id_str']))
+
+		
+

@@ -1,0 +1,8 @@
+cron:
+- description: fetch sap twitter search results and update db
+  url: /update
+  schedule: every 15 minutes
+
+- description: refresh front page
+  url: /refresh
+  schedule: every 15 minutes
