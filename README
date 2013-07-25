@@ -1,0 +1,12 @@
+twitnews is a Twitter based news aggregator.
+
+It:
+1. Executes a Twitter search using Application authentication
+2. Parses links in the response and fetches page titles
+3. Counts instances of links and calculates score
+4. Sorts similar headlines into clusters
+5. Presents links and titles in descending order by score
+
+twitnews is a Google App Engine app an is designed to scale. Unless the velocity of search results is very high (e.g. for broad searches like "news") twitnews should stay within the free limits of both Twitter and GAE.  Even for broader searches GAE costs incurred should not exceed $1 or $2 a day.
+
+For questions please contact me at clemmerl@gmail.com.
