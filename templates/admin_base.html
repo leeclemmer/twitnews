@@ -2,13 +2,42 @@
 
 <html>
 <head>
-	<title>twitnews admin</title>
+	{% block head %}
+	<title>[Admin] {% block title %}{% endblock %}</title>
 
+	<link rel="stylesheet" href="/static/css/admin.css" type="text/css" />
+	{% endblock %}
 </head>
 
 <body>
+	<div id='header'>
+		<ul id='topmenu'>
+			{% block topmenu %}
+			<li><a href="/">Home</a></li>
+			<li><a href="/admin">Admin Home</a></li>
+			{% endblock %}
+		</ul>
+	</div>
 	<div id='wrapper'>
+		<div id='lcol'>
+			<ul id='submenu'>
+				{% block lcol %}
+				<li><a href="/admin/refresh">Refresh Frontpage</a></li>
+				<li><a href="/admin/edit">Edit Frontpage</a></li>
+				<li><a href="/admin/update">Update DB</a></li>
+				<li><a href="/admin/lookup">DB Lookup</a>
+				<li><a href="/admin/stream">Twitter Stream</a></li>
+				<li><a href="/admin/debug">Debug</a></li>
+				{% endblock %}
+			</ul>
+		</div>
 
+		<div id='main'>
+			{% block main %}
+			<h1>Admin Main Page</h1>
+			<p>Fill in block</p>
+			{% endblock %}
+		</div>
 	</div>
 
 </body>

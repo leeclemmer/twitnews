@@ -1,0 +1,50 @@
+{% extends "admin_base.html" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block main %}
+	<h1>Edit Frontpage</h1>
+	{% if status %}
+		<p style='status'>{{ status }}</p>
+	{% endif %}
+	<form method='post' id='edit'>
+		<ul>
+			<li><input type='submit'/></li>
+			{% for top_link in top_links %}
+				{% if 'cid_' in top_link[0] %}
+				<li id="{{top_link[0]}}" class="cluster-item">
+					<div class='cluster-header'>{{'%.1f' % (top_link[1]['score'])}} - Cluster {{top_link[0]}}</div>
+					<ul class="cluster">
+					{% for top_link in top_link[1]['members'] %}
+						<li id="{{top_link[0]}}">
+							<input class='input-title' type='text' name='title-{{top_link[0]}}' value="{{top_link[1]['title']}}"/>
+							<div class='meta'>
+								<span class='count'>{{'%.1f' % (top_link[1]['score'],)}}</span> | 
+								<span class='votes'>{{top_link[1]['votes']}} mentions</span> | 
+								<a href="{{top_link[1]['url_full']}}" target='_blank'>{{top_link[1]['domain']}}</a>
+								<input type='checkbox' name='blocked-{{top_link[0]}}'/>
+								<label class='label-block'> Block</label>
+							</div>
+						</li>
+					{% endfor %}
+					</ul>
+				</li>
+				{% elif top_link %}
+				<li id="{{top_link[0]}}">
+					<input class='input-title' type='text' name='title-{{top_link[0]}}' value="{{top_link[1]['title']}}"/>
+					<div class='meta'>
+						<span class='count'>{{'%.1f' % (top_link[1]['score'],)}}</span>
+						<span class='divider'> | </span>
+						<span class='votes'>{{top_link[1]['votes']}} mentions</span>
+						<span class='divider'> | </span>
+						<a href="{{top_link[1]['url_full']}}" target='_blank'>{{top_link[1]['domain']}}</a>
+						<input type='checkbox' name='blocked-{{top_link[0]}}'/>
+						<label class='label-block'> Block</label>
+					</div>
+				</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+		<input type='submit'/>
+	</form>
+{% endblock %}

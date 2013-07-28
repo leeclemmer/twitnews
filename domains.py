@@ -69,7 +69,12 @@ TITLESPLITMAPPING = {'gigaom.com':('..Tech',0),
 					 'confio.com':1,
 					 'abclocal.go.com':1,
 					 'humanipo.com':3,
-					 'bbc.co.uk':6
+					 'bbc.co.uk':6,
+					 'blogs.hbr.org':7,
+					 'fastcompany.com':3,
+					 'falseeconomy.org.uk':3,
+					 'journalism.co.uk':3,
+					 'guardian.co.uk':3
 					 }
 
 # SPLITTYPES is a dictionary of common ways to split the title of a page

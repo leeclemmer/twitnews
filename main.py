@@ -184,7 +184,7 @@ def refreshPage():
 
 	latest = {'data':top_links,
 			  'html':render_str('index.html',top_links=top_links,title=config.TITLE,stylesheet=config.STYLESHEET),
-			  'html_edit':render_str('edit_frontpage.html',top_links=top_links,title='[EDIT] - ' + config.TITLE)}
+			  'html_edit':render_str('admin_edit.html',top_links=top_links,title=config.TITLE)}
 	# Put to DB
 	Content.putContent(latest)
 
@@ -345,24 +345,7 @@ class MainPage(handler.Handler):
 			memcache.set('last_status_fetched_id', response.get('statuses')[0].get('id'),time=config.LASTFETCHEDTIMEOUT*2)
 			memcache.set('last_status_fetched_on', time.time(),time=config.LASTFETCHEDTIMEOUT*2)
 
-		return (response,memcache.get('last_status_fetched_id'),memcache.get('last_status_fetched_on'),fetch_until)	
-
-	def setLatestContentCache(self):
-		''' Sets memcache['latest_content'] with latest DB Content data
-		and returns dictionary of Content entity data.'''
-		latest = {}
-
-		info('DB QUERY in setLatestContentCache')
-		q = Content.gql('ORDER BY created_on DESC LIMIT 1')
-		latest = q.get()
-		if latest:
-			latest = {'data':latest.content,
-					  'html':latest.content_html,
-					  'html_edit':latest.content_edit}
-
-			memcache.delete('latest_content')
-			memcache.set('latest_content',latest,time=config.LASTFETCHEDTIMEOUT)
-		return latest
+		return (response,memcache.get('last_status_fetched_id'),memcache.get('last_status_fetched_on'),fetch_until)
 
 class Update(MainPage):
 	''' Gets Twitter JSON response and sends batches of URLs
@@ -414,12 +397,6 @@ class Update(MainPage):
 		if urls: 
 			deferred.defer(urlFetch,urls)
 		else: info('urls list was empty')
-
-class RefreshPage(MainPage):
-	def get(self):
-		deferred.defer(refreshPage)
-		#refreshPage()
-		self.write('Task kicked off. <a href="/">Home</a>')
 
 class Stream(MainPage):
 	def get(self):
@@ -478,12 +455,7 @@ class EditFrontpage(MainPage):
 		args = self.request.arguments()
 
 		output += '<small>Args:<br/>' + '  -  '.join(self.request.arguments()) + '</small><br/><br/>'
-
-		'''arg_ids = [harg.split('-')[1] for arg in args]
-		arg_ids = list(set(arg_ids))
-		for arg_id in arg_ids:
-			if 
-		self.write(arg_ids)'''
+		
 		for arg in args:
 			arg_id = arg.split('-')[1]
 			if not items.get(arg_id): items[arg_id] = {}
@@ -661,5 +633,4 @@ app = webapp2.WSGIApplication([('/',MainPage),
 							   ('/edit',EditFrontpage),
 							   ('/update',Update),
 							   ('/stream',Stream),
-							   ('/refresh',RefreshPage),
 							   ('/debug',Debug)], debug=True)

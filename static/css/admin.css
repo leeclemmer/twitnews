@@ -1,0 +1,197 @@
+html, body {
+	margin:0;
+	padding:0;
+}
+
+body {
+	font-size:76%;
+	font-size:1.2em;
+	font-family: Arial, sans;
+	background-color:red;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:visited {
+	color:blue;
+}
+
+h1 {
+	margin:0;
+}
+
+#header {
+	width:100%;
+	height:60px;
+	margin:0;
+	padding:0;
+	background-color:#ddd;
+	border-bottom: 1px solid #666;
+	box-shadow:2px 2px 4px #ccc;
+	z-index:100;
+}
+
+#topmenu {
+	margin:0;
+	padding:0;
+	list-style-type: none
+}
+
+#topmenu li {
+	float:left;
+	height:60px;
+	line-height: 60px;
+	padding-left:30px;
+}
+
+#lcol {
+	position: absolute;
+	top:61px;
+	bottom:0;
+	width:200px;
+	background-color:#eee;
+	border-right:1px solid #777;
+	box-shadow:2px 2px 4px #ccc;
+	z-index:-1;
+}
+
+#submenu {
+	margin:0;
+	padding:10px;
+	list-style-type:none; 
+}
+
+#submenu li {
+	padding-bottom:10px;
+}
+
+#main {
+	position: absolute;
+	top:61px;
+	bottom:0;
+	left:201px;
+	right:0;
+	padding:15px;
+	overflow: scroll;
+	background-color:white;
+	z-index:-100;
+}
+
+.status {
+	font-style: italic;
+}
+
+/*** Edit Frontpage ***/
+#edit ul {
+	margin:0;
+	padding:0;
+	list-style-type: none;
+}
+
+#edit ul.cluster {
+	margin-left:50px;
+}
+
+#edit ul li {
+	padding-bottom:50px;
+}
+
+#edit ul li a {
+	color:#CECEF6;
+}
+
+#edit .input-title {
+	height:30px;
+	width:100%;
+	padding:5px;
+	font-size:1.4em;
+	border:1px solid #ddd;
+}
+
+#edit .label-block {
+	color:#F6CECE;
+}
+
+#edit .meta {
+	padding:5px 0 0 6px;
+	font-size:0.9em;
+	color:#ccc;
+}
+
+#edit .cluster-item {
+	padding:0;
+}
+
+#edit .cluster-header {
+	font-size:1.4em;
+	margin-bottom:1em;
+	font-style:italic;
+	color: #aaa;
+}
+
+.updated-item {
+	float:left;
+	width:400px;
+	margin:0 1em 1em 0;
+	padding:20px;
+	box-shadow:2px 2px 4px #ccc;
+	border:1px solid #ccc;
+}
+
+.updated-item .ui-id {
+	height:30px;
+	margin-bottom:20px;
+	font-family: courier;
+	font-size:0.9em;
+	color:#aaa;
+	border-bottom:1px dotted #CECEF6;
+}
+
+.updated-item .ui-oldtitle {
+	color:red;
+}
+
+.updated-item .ui-title {
+	color:#31B404;
+}
+
+.updated-item.blocked {
+	background-color:#F8E0E0;
+}
+
+.updated-item .blocked {
+	color:red;
+}
+
+.updated-item.blocked .ui-title {
+	color:black;
+}
+
+/*** Lookup ***/
+form#lookup input, form#lookup select {
+	height:30px;
+	width:400px;
+	margin-top:0.5em;
+	padding:5px;
+	font-size:1.4em;
+	border:1px solid #ddd;
+}
+
+form#lookup {
+	height:50px;
+}
+
+table#lookup-obj {
+	margin-top:1em;
+}
+
+table#lookup-obj td {
+	border-bottom:1px solid #ccc;
+}
+
+table#lookup-obj .key {
+	padding-right:30px;
+	font-weight:bold;
+}

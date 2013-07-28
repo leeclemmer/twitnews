@@ -4,5 +4,5 @@ cron:
   schedule: every 15 minutes
 
 - description: refresh front page
-  url: /refresh
+  url: /admin/refresh?refresh=1
   schedule: every 15 minutes

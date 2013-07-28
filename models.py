@@ -1,6 +1,5 @@
 from google.appengine.ext import db
 import logging
-import utils
 import datetime
 
 class Content(db.Model):

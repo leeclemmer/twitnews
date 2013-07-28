@@ -1,0 +1,35 @@
+{% extends "admin_base.html" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block main %}
+	<h1>Look up entity</h1>
+	{% if status %}
+		<p style='status'>{{ status }}</p>
+	{% endif %}
+	{% if not obj %}
+	<form method='get' id='lookup'>
+		<p>
+			<label>Select entity to look up</label><br/>
+			<select name='kind' form='lookup'>
+				<option value='Content'>Content</option>
+				<option value='Stories' selected>Stories</option>
+			</select>
+		</p>
+
+		<p>
+			<label>Enter the key name of the entity</label><br/>
+			<input type='text' name='keyname'/>
+		</p>
+	<form>
+	{% else %}
+	<table id='lookup-obj'>
+			{% for o in obj %}
+			<tr>
+				<td class='key'>{{ o[0] }}</td>
+				<td>{{ o[1] }}</td>
+			</tr>
+			{% endfor %}
+	</table>
+	{% endif %}
+{% endblock %}

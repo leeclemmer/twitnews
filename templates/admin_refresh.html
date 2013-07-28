@@ -1,0 +1,15 @@
+{% extends "admin_base.html" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block main %}
+	<h1>Refresh</h1>
+	<p>
+		<form method='get'>
+			<label>Refresh the front page?</label>
+			<input type='hidden' name='refresh' value='1'/>
+			<input type='submit' value='Refresh front page'/>
+		</form>
+	</p>
+	<p class='status'>{{ status }}</p>
+{% endblock %}
