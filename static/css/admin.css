@@ -1,168 +1,32 @@
-html, body {
-	margin:0;
-	padding:0;
-}
-
-body {
-	font-size:76%;
-	font-size:1.2em;
-	font-family: Arial, sans;
-	background-color:red;
-}
-
-a {
-	text-decoration: none;
-	color:black;
-}
-
-a:visited {
-	color:black;
-}
-
-h1 {
-	margin:0;
-}
-
-input[type='text'] {
-	font-size:1.4em;
-	width:400px;
-	padding:5px;
-	border:1px solid #ddd;
-}
-
-input[type='submit'] {
-	font-size:1.2em;
-	margin:0;
-	padding:8px;
-	border:1px solid #ddd;
-	box-shadow: 0px 1px 3px #ddd;
-}
-
-select {
-	font-size:1.4em;
-	padding:5px;
-	border:1px solid #ddd;	
-}
-
-#header {
-	width:100%;
-	height:60px;
-	margin:0;
-	padding:0;
-	background-color:#333;
-	border-bottom: 1px solid #666;
-	box-shadow:2px 2px 4px #ccc;
-	z-index:100;
-}
-
-#header a {
-	color:#eee;
-}
-
-#topmenu {
-	margin:0;
-	padding:0;
-	list-style-type: none
-}
-
-#topmenu li {
-	float:left;
-	height:60px;
-	line-height: 60px;
-	padding-left:30px;
-}
-
-#lcol {
-	position: absolute;
-	top:61px;
-	bottom:0;
-	width:150px;
-	background-color:#fff;
-	border-right:1px dotted #777;
-	z-index:-1;
-}
-
-#submenu {
-	margin:0;
-	padding:20px;
-	list-style-type:none; 
-}
-
-#submenu li {
-	padding-bottom:10px;
-}
-
-#main {
-	position: absolute;
-	top:61px;
-	bottom:0;
-	left:151px;
-	right:0;
-	padding:20px;
-	overflow-y: scroll;
-	background-color:white;
-	z-index:-100;
-}
-
-.status {
-	font-style: italic;
-}
-
-/*** Edit Frontpage ***/
-#edit ul {
-	margin: 1em 0 0;
-	padding:0;
-	list-style-type: none;
-}
-
-#edit ul.cluster {
-	margin-left:50px;
-}
-
-#edit ul li {
-	padding-bottom:50px;
-}
-
-#edit ul li a {
-	color:#CECEF6;
-}
-
-#edit .input-title {
-	height:30px;
-	width:100%;
-	padding:5px;
-	font-size:1.4em;
-	border:1px solid #ddd;
-}
-
-#edit .label-block {
-	color:#F6CECE;
+/*** Edit ***/
+#edit li {
+    margin-bottom:1em;
 }
 
 #edit .meta {
-	padding:5px 0 0 6px;
+    padding:5px 0 0 6px;
 	font-size:0.9em;
 	color:#ccc;
 }
 
-#edit .cluster-item {
-	padding:0;
+#edit .label-block {
+    color:#F6CECE;
 }
 
 #edit .cluster-header {
-	font-size:1.4em;
+    font-size:1.4em;
 	margin-bottom:1em;
 	font-style:italic;
 	color: #aaa;
 }
 
 .updated-item {
-	float:left;
-	width:400px;
+	width:100%;
+	max-width:500px;
 	margin:0 1em 1em 0;
 	padding:20px;
-	box-shadow:2px 2px 4px #ccc;
-	border:1px solid #ccc;
+	border-radius: 6px;
+    background-color:#f9f9f9;
 }
 
 .updated-item .ui-id {
@@ -195,45 +59,22 @@ select {
 }
 
 /*** Lookup ***/
-form#lookup input, form#lookup select {
-	margin-top:0.5em;
-}
-
-form#lookup {
-	height:50px;
-}
-
-table.lookup-obj {
-	margin:1em 0 3em 0;
-}
-
-table.lookup-obj td {
-	border-bottom:1px solid #ccc;
-}
-
-table.lookup-obj .key {
-	padding-right:30px;
-	font-weight:bold;
-}
-
-/*** Stream ***/
-#tw-search input[type='text'] {
-	width:100%;
-	margin-bottom:1em;
-}
-.tw-summary {
+.key {
 	font-weight: bold;
 }
 
+
+
+/*** Stream ***/
 .tw-status {
-	width:500px;
+    width: 100%;
+    max-width: 500px;
 	padding:18px 18px 0;
 	font-size:0.9em;
-	border:1px solid #efefef;
-	box-shadow:0px 1px 3px #ddd;
+	border:1px solid #eee;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;
+	border-radius: 6px;
 	margin-bottom:2em;
 }
 
@@ -276,5 +117,5 @@ table.lookup-obj .key {
 
 .tw-msg {
 	clear:both;
-	padding-top:20px;
+	padding-top:10px;
 }

@@ -58,7 +58,7 @@ def refreshPage():
 
 	latest = {'data':top_links,
 			  'html':render_str('index.html',top_links=top_links,title=config.TITLE,stylesheet=config.STYLESHEET),
-			  'html_edit':render_str('admin_edit.html',top_links=top_links,title=config.TITLE + ' Edit')}
+			  'html_edit':render_str('admin_edit.html',top_links=top_links,title=config.TITLE + ' Edit', active = 'edit')}
 	# Put to DB
 	Content.putContent(latest)
 
@@ -175,10 +175,6 @@ def clusters(e,eht,t=0):
 def render_str(template, **params):
 	t = jinja_env.get_template(template)
 	return t.render(params)
-
-def str_to_class(s):
-	''' Return a class with name s. '''
-	return getattr(sys.modules[__name__], s)
 
 def urlFetch(urls):
 	info('Starting urlFetch, number of urls to process',len(urls))

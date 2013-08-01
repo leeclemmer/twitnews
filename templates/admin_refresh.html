@@ -5,10 +5,10 @@
 {% block main %}
 	<h1>Refresh</h1>
 	<p>
-		<form method='get'>
-			<input type='hidden' name='refresh' value='1'/>
-			<input type='submit' value='Refresh front page'/>
+		<form method="get">
+			<input type="hidden" name="refresh" value="1"/>
+			<button type="submit" class="btn btn-primary">Refresh front page</button>
 		</form>
 	</p>
-	<p class='status'>{{ status }}</p>
+	<p class="text-info">{{ status }}</p>
 {% endblock %}

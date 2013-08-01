@@ -5,17 +5,17 @@
 {% block main %}
 	<h1>Twitter Stream</h1>
 	{% if status %}
-		<p class='status'>{{ status }}</p>
+		<p class="status">{{ status }}</p>
 	{% endif %}
 
-	<form method='get' id='tw-search'>
+	<form method="get">
 		<p>
-			<input type='text' name='q' value='{{ query }}'/><br/>
-			<input type='submit' value='Search Twitter' />
+			<input type="text" class="form-control" name="q" value="{{ query }}"/><br/>
+			<button type="submit" class="btn btn-primary">Search Twitter</button>
 		</p>
 	</form>
 
-	<p class='tw-summary'>
+	<p class="text-info">
 		{{summary['total']}} status updates<br/>
 		Oldest: {{summary['oldest']}}<br/>
 		Velocity: {{summary['velocity']}} tweets/min.
@@ -23,13 +23,13 @@
 
 	{% for status in statuses %}
 		<div class="tw-status">
-			<div class='time'>{{status_times[status['id']]}}</div>
-			<div class='tw-header'>
-				<img width="48px" height="48px" src="{{status['user']['profile_image_url_https']}}"/>
-					<span class='tw-name'><a href='http://www.twitter.com/{{status['user']['screen_name']}}' target='_blank'>{{status['user']['name']}}</a></span> <br/>
-				<span class='tw-screenname'>@{{status['user']['screen_name']}}</span>
+			<div class="time">{{status_times[status['id']]}}</div>
+			<div class="tw-header">
+				<img width="48px" height="48px" src="{{status["user"]["profile_image_url_https"]}}"/>
+					<span class="tw-name"><a href="http://www.twitter.com/{{status['user']['screen_name']}}" target="_blank">{{status['user']['name']}}</a></span> <br/>
+				<span class="tw-screenname">@{{status['user']['screen_name']}}</span>
 			</div>
-			<div class='tw-msg'>
+			<div class="tw-msg">
 				{{status['text']}}
 			</div>
 			<ul>

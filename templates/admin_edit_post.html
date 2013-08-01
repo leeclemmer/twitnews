@@ -5,17 +5,17 @@
 {% block main %}
 	<h1>Edit Frontpage</h1>
 	{% if status %}
-		<p class='status'>{{ status }}</p>
+		<p class="text-info">{{ status }}</p>
 	{% endif %}
 	{% for k,v in items.iteritems() %}
-	<div class='updated-item {% if v['blocked'] %}blocked{% endif %}'>
-		<div class='ui-id'><a href='/admin/lookup?kind=Stories&keyname={{ k }}'>{{ k }}</a></div>
+	<div class="updated-item {% if v['blocked'] %}blocked{% endif %}">
+		<div class="ui-id"><a href="/admin/lookup?kind=Stories&keyname={{ k }}">{{ k }}</a></div>
 		{% if v['title'] %}
-		<div class='ui-oldtitle'>{{ v['oldtitle'] }}</div>
-		<div class='ui-title'>{{ v['title'] }}</div>
+		<div class="ui-oldtitle">{{ v['oldtitle'] }}</div>
+		<div class="ui-title">{{ v['title'] }}</div>
 		{% endif %}
 		{% if v['blocked'] %}
-		<div class='blocked'>Now blocked</div>
+		<div class="blocked">Now blocked</div>
 		{% endif %}
 	</div>
 	{% endfor %}

@@ -5,7 +5,7 @@ title = config.TITLE
 
 class AdminMain(Handler):
 	def get(self):
-		self.render('admin_main.html',title=title)
+		self.render('admin_main.html',title=title, active = 'admin')
 	pass
 
 class AdminRefresh(Handler):
@@ -15,7 +15,7 @@ class AdminRefresh(Handler):
 		if  self.request.get('refresh'):			
 			deferred.defer(refreshPage)
 			status = 'Page refresh task added'
-		self.render('admin_refresh.html',title=title + ' Refresh',status=status)
+		self.render('admin_refresh.html',title=title + ' Refresh',status=status, active = 'refresh')
 
 class AdminEdit(Handler):
 	def get(self):
@@ -70,7 +70,7 @@ class AdminEdit(Handler):
 
 		deferred.defer(refreshPage)
 
-		self.render('admin_edit_post.html',title=title + ' Edit',status='Items updated. Frontpage being refreshed.',items=items)
+		self.render('admin_edit_post.html',title=title + ' Edit',status='Items updated. Frontpage being refreshed.',items=items, active = 'edit')
 
 
 class AdminUpdate(Handler):	
@@ -115,11 +115,11 @@ class AdminUpdate(Handler):
 								del task_urls[:]
 				output['numtasks'] += 1
 				self.addTask(task_urls)
-				self.render('admin_update.html',statuses=statuses, status='',**output)
+				self.render('admin_update.html',statuses=statuses, status='', active = 'update',**output)
 			else: 
-				self.render('admin_update.html',statuses=[], status='No response mate.',**output)
+				self.render('admin_update.html',statuses=[], status='No response mate.', active = 'update',**output)
 		else:
-			self.render('admin_update.html')
+			self.render('admin_update.html', active = 'update')
 
 	def addTask(self, urls):
 		info('Creating new task')
@@ -130,21 +130,21 @@ class AdminUpdate(Handler):
 class AdminLookup(Handler):
 	def get(self):
 		kind = self.request.get('kind')
-		if kind: kind = str_to_class(kind)
+		if kind: kind = self.str_to_class(kind)
 		keyname = self.request.get('keyname')
 		t = self.request.get('title')
 		if kind and keyname:
 			kind_ent = kind.get_by_key_name(keyname)
-			self.render('admin_lookup.html',title=title + ' Look up',result=[self.get_obj_props(kind_ent)])
+			self.render('admin_lookup.html',title=title + ' Lookup',result=[self.get_obj_props(kind_ent)])
 		elif kind and t:
 			kinds = kind.all().fetch(limit=10000)
 			results = []
 			for k in kinds:
 				if k.title == t:
 					results.append(self.get_obj_props(k))
-			self.render('admin_lookup.html',title=title + ' Look up',result=results)
+			self.render('admin_lookup.html',title=title + ' Lookup',result=results, active = 'lookup')
 		else:
-			self.render('admin_lookup.html',title=title + ' Look up')
+			self.render('admin_lookup.html',title=title + ' Lookup', active = 'lookup')
 	
 	def get_obj_props(self, ke):
 		''' Takes Kind entity (model instance) ke and returns a list of its properties. '''
@@ -165,6 +165,10 @@ class AdminLookup(Handler):
 			obj.append('ke was None')
 
 		return obj
+
+	def str_to_class(self, s):
+		''' Return a class with name s. '''
+		return getattr(sys.modules[__name__], s)
 
 class AdminStream(Handler):
 	def get(self):
@@ -203,14 +207,14 @@ class AdminStream(Handler):
 				   	   'velocity':velocity}
 			if response[2]: cache_date_str = utils.time_ago_str(time.time() - response[2])
 			else: cache_date_str = ''
-			self.render('admin_stream.html',statuses=statuses,status_times=status_times,status=error,summary=summary,cache_info=list(response[1:3])+[cache_date_str], query=q)
+			self.render('admin_stream.html',title=title + ' Stream',statuses=statuses,status_times=status_times,status=error,summary=summary,cache_info=list(response[1:3])+[cache_date_str], query=q, active = 'stream')
 		else:
 			error = 'Looks like there was no response :('
-			self.render('admin_stream.html',statuses=statuses,status_times=status_times,status=error,summary='',cache_info='',query=q)
+			self.render('admin_stream.html',title=title + ' Stream',statuses=statuses,status_times=status_times,status=error,summary='',cache_info='',query=q, active = 'stream')
 
 class AdminDebug(Handler):
 	def get(self):
-		self.render('admin_debug.html')
+		self.render('admin_debug.html', active = 'debug')
 
 app = webapp2.WSGIApplication([('/admin/?',AdminMain),
 							   ('/admin/refresh',AdminRefresh),

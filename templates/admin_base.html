@@ -1,44 +1,67 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
 	{% block head %}
 	<title>[Admin] {% block title %}{% endblock %}</title>
 
-	<link rel="stylesheet" href="/static/css/admin.css" type="text/css" />
+    <!-- Make sure latest rendering mode for IE is used -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Set the layout viewport equal to device width. (Much) more on this here:
+    http://www.quirksmode.org/mobile/viewports2.html -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+
+    <!-- Custom -->
+	<link rel="stylesheet" href="/static/css/admin.css" type="text/css"/>
 	{% endblock %}
 </head>
 
 <body>
-	<div id='header'>
-		<ul id='topmenu'>
-			{% block topmenu %}
-			<li><a href="/" target="_blank">Home</a></li>
-			<li><a href="/admin">Admin Home</a></li>
-			{% endblock %}
-		</ul>
-	</div>
-	<div id='wrapper'>
-		<div id='lcol'>
-			<ul id='submenu'>
-				{% block lcol %}
-				<li><a href="/admin/update">Update</a></li>
-				<li><a href="/admin/refresh">Refresh</a></li>
-				<li><a href="/admin/edit">Edit</a></li>
-				<li><a href="/admin/lookup">Lookup</a>
-				<li><a href="/admin/stream">Stream</a></li>
-				<li><a href="/admin/debug">Debug</a></li>
+	<div class="container">
+		<div class="navbar">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+
+			<a class="navbar-brand" href="/" target="_blank">Home</a>
+			
+			<div class="nav-collapse collapse navbar-responsive-collapse">
+				<ul class="nav navbar-nav">
+					{% block topmenu %}
+					<li{% if active == 'admin' %} class="active" {% endif %}><a href="/admin">Admin</a></li>
+					<li{% if active == 'update' %} class="active" {% endif %}><a href="/admin/update">Update</a></li>
+					<li{% if active == 'refresh' %} class="active" {% endif %}><a href="/admin/refresh">Refresh</a></li>
+					<li{% if active == 'edit' %} class="active" {% endif %}><a href="/admin/edit">Edit</a></li>
+					<li{% if active == 'lookup' %} class="active" {% endif %}><a href="/admin/lookup">Lookup</a>
+					<li{% if active == 'stream' %} class="active" {% endif %}><a href="/admin/stream">Stream</a></li>
+					<li{% if active == 'debug' %} class="active" {% endif %}><a href="/admin/debug">Debug</a></li>
+					{% endblock %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-10 col-offset-1">
+				{% block main %}
+				<h1>Admin Main Page</h1>
+				<p>Fill in block</p>
 				{% endblock %}
-			</ul>
-		</div>
-
-		<div id='main'>
-			{% block main %}
-			<h1>Admin Main Page</h1>
-			<p>Fill in block</p>
-			{% endblock %}
+			</div>
 		</div>
 	</div>
 
+    <!-- JS plugins -->
+    <script src="/static/js/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- Enable responsive features in IE8 -->
+    <script scr="/static/js/respond.min.js"></script>
 </body>
 </html>
