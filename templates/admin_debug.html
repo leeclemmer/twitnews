@@ -1,0 +1,11 @@
+{% extends "admin_base.html" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block main %}
+	<h1>Debug</h1>
+	{% if status %}
+		<p class='status'>{{ status }}</p>
+	{% endif %}
+	<p>Spare container for any debugging needs...</p>
+{% endblock %}

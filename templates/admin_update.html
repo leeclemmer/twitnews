@@ -1,0 +1,53 @@
+{% extends "admin_base.html" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block main %}
+	<h1>Update</h1>
+	<p>
+		<form method='get'>
+			<input type='hidden' name='update' value='1'/>
+			<input type='submit' value='Update Content'/>
+		</form>
+	</p>
+
+	<p class='status'>{{ status }}</p>
+
+	{% if statuses %}
+		<p>
+			<form method='get' action='/admin/refresh'>
+				<input type='hidden' name='refresh' value='1'/>
+				<input type='submit' value='Refresh front page'/>
+			</form>
+		</p>
+
+		<p class='tw-summary'>
+			Number of statuses: {{numstatuses}}<br/>
+			Number of URLs: {{numurls}}<br/>
+			Number of tasks: {{numtasks}}
+		</p>
+
+		{% for status in statuses %}
+			<div class="tw-status">
+				<div class='tw-header'>
+					<img width="48px" height="48px" src="{{status['user']['profile_image_url_https']}}"/>
+					<span class='tw-name'><a href='http://www.twitter.com/{{status['user']['screen_name']}}' target='_blank'>{{status['user']['name']}}</a></span> <br/>
+					<span class='tw-screenname'>@{{status['user']['screen_name']}}</span>
+				</div>
+				<div class='tw-msg'>
+					{{status['text']}}
+				</div>
+				<ul>
+				{% for url in status['entities']['urls'] %}
+					<li><a href="{{url['expanded_url']}}">{{url['expanded_url']}}</a></li>
+				{% endfor %}
+				{% if status['retweeted_status'] %}
+					{% for url in status['retweeted_status']['entities']['urls'] %}
+						<li><a target="_blank" href="{{url['expanded_url']}}">{{url['expanded_url']}}</a></li>
+					{% endfor %}
+				{% endif %}
+				</ul>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}
