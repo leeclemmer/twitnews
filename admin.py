@@ -115,11 +115,11 @@ class AdminUpdate(Handler):
 								del task_urls[:]
 				output['numtasks'] += 1
 				self.addTask(task_urls)
-				self.render('admin_update.html',statuses=statuses, status='', active = 'update',**output)
+				self.render('admin_update.html',title=title + ' Update',statuses=statuses, status='', active = 'update',**output)
 			else: 
-				self.render('admin_update.html',statuses=[], status='No response mate.', active = 'update',**output)
+				self.render('admin_update.html',title=title + ' Update',statuses=[], status='No response mate.', active = 'update',**output)
 		else:
-			self.render('admin_update.html', active = 'update')
+			self.render('admin_update.html',title=title + ' Update', active = 'update')
 
 	def addTask(self, urls):
 		info('Creating new task')
@@ -214,7 +214,7 @@ class AdminStream(Handler):
 
 class AdminDebug(Handler):
 	def get(self):
-		self.render('admin_debug.html', active = 'debug')
+		self.render('admin_debug.html',title=title + ' Debug', active = 'debug')
 
 app = webapp2.WSGIApplication([('/admin/?',AdminMain),
 							   ('/admin/refresh',AdminRefresh),

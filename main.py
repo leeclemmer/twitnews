@@ -3,6 +3,7 @@ import datetime
 import time
 import urllib2
 import urllib
+import cookielib
 import logging
 import difflib
 import sys

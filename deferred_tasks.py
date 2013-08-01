@@ -231,11 +231,13 @@ def urlFetch(urls):
 def goFetch(url):
 	headers = {'User-Agent': 'lee clemmer - twitter: @leeclemmer | email: clemmerl@gmail.com'}
 	request = urllib2.Request(url,headers=headers)
+	cj = cookielib.CookieJar()
+	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 	title = ''
 
 	try:
-		c = urllib2.urlopen(request, timeout=30)
-		response = c.read()
+		c = opener.open(request, timeout=30)
+		response =c.read()
 
 		if response:
 			url_full = c.geturl()
