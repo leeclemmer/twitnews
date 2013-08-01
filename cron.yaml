@@ -1,6 +1,6 @@
 cron:
 - description: fetch sap twitter search results and update db
-  url: /update
+  url: /admin/update?update=1
   schedule: every 15 minutes
 
 - description: refresh front page

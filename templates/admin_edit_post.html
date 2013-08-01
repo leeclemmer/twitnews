@@ -5,7 +5,7 @@
 {% block main %}
 	<h1>Edit Frontpage</h1>
 	{% if status %}
-		<p style='status'>{{ status }}</p>
+		<p class='status'>{{ status }}</p>
 	{% endif %}
 	{% for k,v in items.iteritems() %}
 	<div class='updated-item {% if v['blocked'] %}blocked{% endif %}'>

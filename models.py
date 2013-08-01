@@ -1,6 +1,15 @@
-from google.appengine.ext import db
+# builtins
 import logging
 import datetime
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__),'lib'))
+
+# internal
+import utils
+
+# external
+from google.appengine.ext import db
 
 class Content(db.Model):
 	content = db.TextProperty(required = True)

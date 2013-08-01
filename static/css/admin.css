@@ -12,14 +12,36 @@ body {
 
 a {
 	text-decoration: none;
+	color:black;
 }
 
 a:visited {
-	color:blue;
+	color:black;
 }
 
 h1 {
 	margin:0;
+}
+
+input[type='text'] {
+	font-size:1.4em;
+	width:400px;
+	padding:5px;
+	border:1px solid #ddd;
+}
+
+input[type='submit'] {
+	font-size:1.2em;
+	margin:0;
+	padding:8px;
+	border:1px solid #ddd;
+	box-shadow: 0px 1px 3px #ddd;
+}
+
+select {
+	font-size:1.4em;
+	padding:5px;
+	border:1px solid #ddd;	
 }
 
 #header {
@@ -27,10 +49,14 @@ h1 {
 	height:60px;
 	margin:0;
 	padding:0;
-	background-color:#ddd;
+	background-color:#333;
 	border-bottom: 1px solid #666;
 	box-shadow:2px 2px 4px #ccc;
 	z-index:100;
+}
+
+#header a {
+	color:#eee;
 }
 
 #topmenu {
@@ -50,16 +76,15 @@ h1 {
 	position: absolute;
 	top:61px;
 	bottom:0;
-	width:200px;
-	background-color:#eee;
-	border-right:1px solid #777;
-	box-shadow:2px 2px 4px #ccc;
+	width:150px;
+	background-color:#fff;
+	border-right:1px dotted #777;
 	z-index:-1;
 }
 
 #submenu {
 	margin:0;
-	padding:10px;
+	padding:20px;
 	list-style-type:none; 
 }
 
@@ -71,10 +96,10 @@ h1 {
 	position: absolute;
 	top:61px;
 	bottom:0;
-	left:201px;
+	left:151px;
 	right:0;
-	padding:15px;
-	overflow: scroll;
+	padding:20px;
+	overflow-y: scroll;
 	background-color:white;
 	z-index:-100;
 }
@@ -85,7 +110,7 @@ h1 {
 
 /*** Edit Frontpage ***/
 #edit ul {
-	margin:0;
+	margin: 1em 0 0;
 	padding:0;
 	list-style-type: none;
 }
@@ -171,27 +196,85 @@ h1 {
 
 /*** Lookup ***/
 form#lookup input, form#lookup select {
-	height:30px;
-	width:400px;
 	margin-top:0.5em;
-	padding:5px;
-	font-size:1.4em;
-	border:1px solid #ddd;
 }
 
 form#lookup {
 	height:50px;
 }
 
-table#lookup-obj {
-	margin-top:1em;
+table.lookup-obj {
+	margin:1em 0 3em 0;
 }
 
-table#lookup-obj td {
+table.lookup-obj td {
 	border-bottom:1px solid #ccc;
 }
 
-table#lookup-obj .key {
+table.lookup-obj .key {
 	padding-right:30px;
 	font-weight:bold;
+}
+
+/*** Stream ***/
+#tw-search input[type='text'] {
+	width:100%;
+	margin-bottom:1em;
+}
+.tw-summary {
+	font-weight: bold;
+}
+
+.tw-status {
+	width:500px;
+	padding:18px 18px 0;
+	font-size:0.9em;
+	border:1px solid #efefef;
+	box-shadow:0px 1px 3px #ddd;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	margin-bottom:2em;
+}
+
+.tw-status a {
+	color:blue;
+}
+
+.tw-status img {
+	float:left;
+	margin-right:0.5em;
+}
+
+.tw-status ul {
+	list-style-type: none;
+	padding:0;
+}
+
+.tw-status .time {
+	font-size:0.9em;
+	color:grey;
+	float:right;
+	padding-left:10px;
+}
+
+.tw-header {
+	margin-bottom:0.8em;
+}
+
+.tw-name {
+	font-weight: bold;
+}
+
+.tw-name a {
+	color:black;
+}
+
+.tw-screenname {
+	color:#ccc;
+}
+
+.tw-msg {
+	clear:both;
+	padding-top:20px;
 }
