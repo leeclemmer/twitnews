@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ title }}</title>
+
+    <!-- Make sure latest rendering mode for IE is used -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Set the layout viewport equal to device width. (Much) more on this here:
+    http://www.quirksmode.org/mobile/viewports2.html -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+
+    <!-- Custom -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="row top-row">
+			<div id="banner-wrapper" class="col-12 col-sm-9 col-lg-7">
+				<h1 id="banner-1" class="banner">ENTERPRISE</h1>
+				<h1 id="banner-2" class="banner">TECH</h1>
+			</div>
+
+			<div id="tagline" class="col-12 col-sm-3 col-lg-4">
+				<em>Enterprise technology news people are talking about.</em>
+			</div>
+		</div>
+
+		{% for top_link in top_links %}
+			{% if top_links.index(top_link) % 3 == 0 %}
+			<div class="row">
+			{% endif %}
+
+			<div class="col-sm-4 col-lg-4">
+				<div class="story">
+					<div class="story-img">
+					{% if top_link[1]['image_url'] %}
+						<img src="{{ top_link[1]['image_url'] }}" class="img-responsive"/>
+					{% endif %}
+					</div>
+
+					<h2>
+						<a href="{{ top_link[1]['url_full'] }}">
+							{{ top_link[1]['title'] }}
+						</a>
+					</h2>
+
+					<p class="domain">
+						<a href="{{ top_link[1]['url_full'] }}">
+							{{ top_link[1]['domain'] }}
+						</a>
+						<small class="text-muted">
+							&bull; 
+							<a href="https://twitter.com/search?q={{ top_link[1]['title'] }}">
+								{{ top_link[1]['votes'] }} mentions
+							</a>
+						</small>
+					</p>
+
+					<p class="excerpt">
+						{% if top_link[1]['excerpt'] %}
+							{{ top_link[1]['excerpt'] }}
+						{% endif %}
+					</p>
+				</div>
+			</div>
+
+			{% if (top_links.index(top_link) - 2) % 3 == 0 %}
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+    <!-- JS plugins -->
+    <script src="/static/js/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- Enable responsive features in IE8 -->
+    <script scr="/static/js/respond.min.js"></script>
+</body>
+</html>
