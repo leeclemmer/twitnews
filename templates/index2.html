@@ -26,23 +26,28 @@
 			</div>
 
 			<div id="tagline" class="col-12 col-sm-3 col-lg-4">
-				<em>Enterprise technology news people are talking about.</em>
+				<em>Enterprise technology stories people are talking about.</em>
 			</div>
 		</div>
 
 		{% for top_link in top_links %}
-			{% if top_links.index(top_link) % 3 == 0 %}
+			{% set tli = top_links.index(top_link) %}
+			{% if 'cid_' in top_link[0] %}
+				{% set top_link = top_link[1]['members'][0] %}
+			{% endif %}
+
+			{% if tli % 3 == 0 %}
 			<div class="row">
 			{% endif %}
 
 			<div class="col-sm-4 col-lg-4">
 				<div class="story">
 					<div class="story-img">
-					{% if top_link[1]['image_url'] %}
+						{% if top_link[1]['image_url'] %}
 						<img src="{{ top_link[1]['image_url'] }}" class="img-responsive"/>
-					{% endif %}
+						{% endif %}
 					</div>
-
+					
 					<h2>
 						<a href="{{ top_link[1]['url_full'] }}">
 							{{ top_link[1]['title'] }}
@@ -69,7 +74,7 @@
 				</div>
 			</div>
 
-			{% if (top_links.index(top_link) - 2) % 3 == 0 %}
+			{% if (tli - 2) % 3 == 0 %}
 			</div>
 			{% endif %}
 		{% endfor %}
