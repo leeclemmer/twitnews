@@ -34,7 +34,8 @@ class Stories(db.Model):
 	votes = db.IntegerProperty(required = True, indexed=False)
 	score = db.FloatProperty()
 	blocked = db.BooleanProperty(indexed=False)
-	#excerpt = db.TextProperty()
+	excerpt = db.TextProperty()
+	image_url = db.TextProperty()
 
 	@classmethod
 	def topStoriesDict(cls, number=250):
@@ -51,7 +52,9 @@ class Stories(db.Model):
 										   'url_full':item.url_full,
 										   'votes':item.votes,
 										   'score':item.score,
-										   'blocked':item.blocked}
+										   'blocked':item.blocked,
+										   'excerpt':item.excerpt,
+										   'image_url':item.image_url}
 		return stories
 
 	@classmethod
@@ -69,7 +72,9 @@ class Stories(db.Model):
 							url_full = cls_item.url_full,
 							votes = batch[cls_item.key().name()]['votes'],
 							score = cls.calcScore(batch[cls_item.key().name()]['votes'],utils.hours_ago_from_date(cls_item.added_on)),
-							blocked = cls_item.blocked)
+							blocked = cls_item.blocked,
+							excerpt = cls_item.excerpt,
+							image_url = cls_item.image_url)
 				to_put[cls_item.key().name()] = s
 
 		# Create new stories and add to to_put
@@ -80,7 +85,9 @@ class Stories(db.Model):
 							url_full = v['url_full'],
 							votes = v['votes'],
 							score = cls.calcScore(v['votes'],0),
-							blocked = v['blocked'])
+							blocked = v['blocked'],
+							excerpt = v['excerpt'],
+							image_url = v['image_url'])
 				to_put[k] = s
 
 		logging.info('about to put %s'% (len(to_put.values())))

@@ -1,4 +1,5 @@
 from main import *
+from lxml.html.clean import Cleaner
 
 ''' Herein we find all the functions that are called through deferred.defer
 	Currently the two primary functions being called are refreshPage and 
@@ -23,7 +24,9 @@ def refreshPage():
 		                   'added_on':0,
 		                   'votes':0,
 		                   'score':0,
-		                   'blocked':None}
+		                   'blocked':None,
+		                   'excerpt':'',
+		                   'image_url':''}
 
 		# Members are currently (id,title) tuples. Let's grab the 
 		# story object from top_links and put it under 'members'
@@ -57,7 +60,7 @@ def refreshPage():
 	top_links = top_links[:config.NUMHEADLINES]
 
 	latest = {'data':top_links,
-			  'html':render_str('index.html',top_links=top_links,title=config.TITLE,stylesheet=config.STYLESHEET),
+			  'html':render_str('index2.html',top_links=top_links,title=config.TITLE,stylesheet=config.STYLESHEET),
 			  'html_edit':render_str('admin_edit.html',top_links=top_links,title=config.TITLE + ' Edit', active = 'edit')}
 	# Put to DB
 	Content.putContent(latest)
@@ -191,11 +194,19 @@ def urlFetch(urls):
 		if not memcache.get(url):
 			new_url_story = goFetch(url)
 			if new_url_story['code'] == 200: # only add successful URLs to stories
+				# Values to create the new story entry with
 				url_full = new_url_story['url_full']
+				excerpt = new_url_story['excerpt']
+				image_url = new_url_story['image_url']
 				domain = utils.domain(url_full)
+
+				# title is run through the splitter to remove website name
 				title = utils.remove_non_ascii(utils.split_by(new_url_story['title'],domain,domains.TITLESPLITMAPPING,domains.SPLITTYPES))
+
+				# story id is md5 hash of domain and title
 				story_id = utils.md5_str(domain,title)
-				if to_put.get(story_id):
+
+				if to_put.get(story_id): # story already in batch
 					ex_links += 1
 					# Should only occur rarely (eg. cold cache)
 					to_put[story_id]['votes'] += 1
@@ -205,7 +216,9 @@ def urlFetch(urls):
 									     'url_full':url_full,
 									     'votes':1,
 									     'score':0,
-									     'blocked':None if validUrl(new_url_story) else True}
+									     'blocked':None if validUrl(new_url_story) else True,
+									     'excerpt':excerpt,
+									     'image_url':image_url}
 				memcache.set(url,story_id)
 			else:
 				info('Bad URL',url)
@@ -233,8 +246,7 @@ def goFetch(url):
 	request = urllib2.Request(url,headers=headers)
 	cj = cookielib.CookieJar()
 	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-	title = ''
-
+	
 	try:
 		c = opener.open(request, timeout=30)
 		response =c.read()
@@ -242,18 +254,106 @@ def goFetch(url):
 		if response:
 			url_full = c.geturl()
 			code = c.getcode()
-			try:
-				doc = fromstring(response)
-				title = doc.xpath('/html/head/title')[0].text_content().strip()
-			except:
-				utils.catch_exception()
-			return {'code':code, 'url_full':url_full, 'title':title}
+			title,excerpt,image_url = getExcerpt(response)
+			info('title',title)
+			info('excerpt',excerpt)
+			info('image_url',image_url)
+			return {'code':code, 
+					'url_full':url_full, 
+					'title':title,
+					'excerpt':excerpt,
+					'image_url':image_url}
 		else: 
 			logging.error('urlFetch: No response.')
-			return {'code':404,'url_full':'','title':''}
+			return {'code':404,'url_full':'','title':'','excerpt':'','image_url':''}
 	except:
 		utils.catch_exception()
-		return {'code':404,'url_full':'','title':''}
+		return {'code':404,'url_full':'','title':'','excerpt':'','image_url':''}
+
+def getExcerpt(url_response):
+	''' Takes url_response and attempts to find and return a title, excerpt, and image. 
+	Code a combination from http://bit.ly/11xofXZ and http://bit.ly/23pdRS '''
+	doc = fromstring(url_response)
+
+	cleaner = Cleaner(meta = False, 
+					  safe_attrs_only = False,
+					  page_structure = False,
+					  remove_tags=['h1','h2','h3','h4','h5','h6'])
+
+	doc = cleaner.clean_html(doc)
+
+	title = ''
+	description = ''
+	image_url = ''
+
+	# Title
+	try: # <meta> og:title: (http://ogp.me/ for more)
+		path = '/html/head/meta[@content][@property="og:title"]'
+		title = doc.xpath(path)[0].get('content')
+	except IndexError:
+		pass
+
+	if not title:
+		try: # <title> tag
+			path = '/html/head/title'
+			title = doc.xpath(path)[0].text_content().strip()
+		except IndexError:
+			pass
+	
+	# Description
+	try: # <meta> og:description
+		path = '/html/head/meta[@content][@property="og:description"]'
+		description = doc.xpath(path)[0].get('content')
+	except IndexError:
+		pass
+
+	if not description:
+		try: # <meta> description
+			path = '/html/head/meta[@content][@name="description"]'
+			description = doc.xpath(path)[0].get('content')
+			# some dumbasses are including HTML tags in the description, so...
+			description = re.sub('<[^>]+?>','',description)
+		except IndexError:
+			pass
+
+	if not description:
+		# Drop the <head>
+		doc.head.drop_tree()
+
+		# Parse page doc text into list, split by newlines
+		text_list = [t.strip() for t in doc.text_content().split('\n')]
+
+		# Pick out longest text string
+		description = max((len(t),t) for t in text_list)[1].strip()
+		info('description', description)
+	
+	description = excerpt(description)
+
+	# Image URL
+	try: # <meta> og:image
+		path = '/html/head/meta[@content][@property="og:image"]'
+		image_url = doc.xpath(path)[0].get('content')
+	except IndexError:
+		pass
+
+	return (title, description, image_url)
+
+def excerpt(s, length = 255, ellipses = False):
+	''' Will take string s and return the first length characters + any till next punctuation if ellipses = False. '''
+	if not ellipses and len(s) > length:
+		punctuation = '!.?'
+		for c in s[length:]:
+			if c in punctuation:
+				i = s[length:].index(c)
+				return '%s%s' % (s[:length],s[length:][:i+1])
+				break
+		return s[:length]
+	elif len(s) <= length:
+		return s
+	elif ellipses:
+		if s.endswith('...'): return s[:length]
+		else: return '%s...' % (s[:length],)
+
 
 def validUrl(urlo):
 	'''Takes a goFetch result and returns True if it passes the tests.'''

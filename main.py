@@ -6,6 +6,7 @@ import urllib
 import cookielib
 import logging
 import difflib
+import re
 import sys
 import os
 from lxml.html import fromstring

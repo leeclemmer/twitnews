@@ -16,26 +16,47 @@
 				<ul>
 					{% for top_link in top_links %}
 						{% if 'cid_' in top_link[0] %}
-							<li id="{{top_link[0]}}">
+							<!--<li id="{{top_link[0]}}">
 								<div class='count'>{{'%.1f' % (top_link[1]['score'])}}</div>
-								<ul class="cluster">
+								<ul class="cluster">-->
 								{% for top_link in top_link[1]['members'] %}
-									<li id="{{top_link[0]}}" class="clusteritem">
+									<li id='{{top_link[0]}}'>
+										<div class='count'>{{'%.1f' % (top_link[1]['score'])}}</div>
 										<div class='title'>
+											<div class='domain'>{{top_link[1]['domain']}} | <a href="https://twitter.com/search?q={{top_link[1]['title']}}">{{top_link[1]['votes']}} mentions</a></div>
+											{% if top_link[1]['image_url'] %}
+											<div class='story-img'>
+												<img src="{{ top_link[1]['image_url'] }}"/>
+											</div>
+											{% endif %}
 											<a href="{{top_link[1]['url_full']}}">{{top_link[1]['title']}}</a>
-											<span class='domain'>{{top_link[1]['domain']}} | <a href="https://twitter.com/search?q={{top_link[1]['title']}}">{{top_link[1]['votes']}} mentions</a></span>
 										</div>
+										{% if top_link[1]['excerpt'] %}
+											<div class="excerpt">
+												{{ top_link[1]['excerpt'] }}
+											</div>
+										{% endif %}
 									</li>
-								{% endfor %}	
+								{% endfor %}	<!--
 								</ul>					
-							</li>
+							</li>-->
 						{% else %}
 						<li id='{{top_link[0]}}'>
 							<div class='count'>{{'%.1f' % (top_link[1]['score'])}}</div>
 							<div class='title'>
+								<div class='domain'>{{top_link[1]['domain']}} | <a href="https://twitter.com/search?q={{top_link[1]['title']}}">{{top_link[1]['votes']}} mentions</a></div>
+								{% if top_link[1]['image_url'] %}
+								<div class='story-img'>
+									<img src="{{ top_link[1]['image_url'] }}"/>
+								</div>
+								{% endif %}
 								<a href="{{top_link[1]['url_full']}}">{{top_link[1]['title']}}</a>
-								<span class='domain'>{{top_link[1]['domain']}} | <a href="https://twitter.com/search?q={{top_link[1]['title']}}">{{top_link[1]['votes']}} mentions</a></span>
-							</div>						
+							</div>
+							{% if top_link[1]['excerpt'] %}
+								<div class="excerpt">
+									{{ top_link[1]['excerpt'] }}
+								</div>
+							{% endif %}
 						</li>
 						{% endif %}
 					{% endfor %}
