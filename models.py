@@ -14,7 +14,7 @@ from google.appengine.ext import db
 class Content(db.Model):
 	content = db.TextProperty(required = True)
 	content_html = db.TextProperty(required = True)
-	content_edit = db.TextProperty(required = True)
+	content_edit = db.TextProperty()
 	created_on = db.DateTimeProperty(required = True)
 
 	@classmethod
@@ -66,6 +66,7 @@ class Stories(db.Model):
 		# Get existing stories, update, and add to to_put
 		for cls_item in cls.get_by_key_name(batch.keys()):
 			if cls_item:
+				''' Something is wrong here, score not being updated for existing stories. '''
 				s = cls(key_name = cls_item.key().name(),
 							added_on = cls_item.added_on,
 							title = cls_item.title,
@@ -99,6 +100,6 @@ class Stories(db.Model):
 			logging.error(e)
 
 	@staticmethod
-	def calcScore(votes, hour_age, gravity=1.4):
+	def calcScore(votes, hour_age, gravity=1.5):
 		return votes / pow((hour_age + 2), gravity)
 

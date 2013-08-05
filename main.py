@@ -91,6 +91,31 @@ class Handler(webapp2.RequestHandler):
 			memcache.set('last_status_fetched_on', time.time(),time=config.LASTFETCHEDTIMEOUT*2)
 
 		return (response,memcache.get('last_status_fetched_id'),memcache.get('last_status_fetched_on'),fetch_until)
+	
+	def get_obj_props(self, ke):
+		''' Takes Kind entity (model instance) ke and returns a list of its properties. '''
+		obj = []
+
+		if ke:
+			# Add keyname as first item
+			if ke.key().name():	obj.append(['keyname',ke.key().name()])
+			elif ke.key().id(): obj.append(['id',ke.key().id()])
+
+			# Add all properties to list
+			for prop in ke.properties():
+				obj.append([prop,getattr(ke,prop)])
+
+			# Sort list (except keyname) of properties alphabetically
+			obj[1:] = sorted([o for o in obj[1:]],key = lambda x: x[0])
+		else:
+			info('get_obj_props: ke was None')
+			obj.append('ke was None')
+
+		return obj
+
+	def str_to_class(self, s):
+		''' Return a class with name s. '''
+		return getattr(sys.modules[__name__], s)
 
 class MainPage(Handler):
 	def get(self):

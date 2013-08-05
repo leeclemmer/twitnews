@@ -5,7 +5,19 @@
 {% block main %}
 	<h1>Debug</h1>
 	{% if status %}
-		<p class='status'>{{ status }}</p>
+		<p class='text-info'>{{ status }}</p>
 	{% endif %}
-	<p>Spare container for any debugging needs...</p>
+	<!--<p>Spare container for any debugging needs...</p>-->
+
+	<form method="post">
+		<input type="hidden" name="email" value="1"/>
+		<button type="submit" class="btn btn-primary">Send email</button>
+	</form>
+
+	<br/><br/>
+
+	<form method="post">
+		<input type="hidden" name="content_db" value="1"/>
+		<button type="submit" class="btn btn-primary">Download Content Entities</button>
+	</form>
 {% endblock %}

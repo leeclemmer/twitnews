@@ -1,5 +1,12 @@
+# builtin
+import ast
+
+# internal
 from main import *
+
+#external
 from deferred_tasks import refreshPage, urlFetch
+from google.appengine.api import mail
 
 title = config.TITLE
 
@@ -135,6 +142,8 @@ class AdminLookup(Handler):
 		t = self.request.get('title')
 		if kind and keyname:
 			kind_ent = kind.get_by_key_name(keyname)
+			if kind_ent == None:
+				kind_ent = kind.get_by_id(int(keyname))
 			self.render('admin_lookup.html',title=title + ' Lookup',result=[self.get_obj_props(kind_ent)])
 		elif kind and t:
 			kinds = kind.all().fetch(limit=10000)
@@ -145,30 +154,67 @@ class AdminLookup(Handler):
 			self.render('admin_lookup.html',title=title + ' Lookup',result=results, active = 'lookup')
 		else:
 			self.render('admin_lookup.html',title=title + ' Lookup', active = 'lookup')
-	
-	def get_obj_props(self, ke):
-		''' Takes Kind entity (model instance) ke and returns a list of its properties. '''
-		obj = []
 
-		if ke:
-			# Add keyname as first item
-			obj.append(['keyname',ke.key().name()])
+class AdminDownload(Handler):
+	def get(self):
+		self.render('admin_download.html', title = ' Download', active = 'download')
 
-			# Add all properties to list
-			for prop in ke.properties():
-				obj.append([prop,getattr(ke,prop)])
+	def post(self):
+		self.response.headers['Content-Type'] = 'text/text'
+			
+		kind = self.request.get('kind')
+		if kind: kind = self.str_to_class(kind)
+		number = self.request.get('number')
+		if kind and number:
+			if kind.kind() == 'Content':
+				kinds = kind.all().order('-created_on').fetch(limit=int(number))
+				props = ['datetime','keyname','position']
+				props = props + sorted(Stories.properties())
 
-			# Sort list (except keyname) of properties alphabetically
-			obj[1:] = sorted([o for o in obj[1:]],key = lambda x: x[0])
-		else:
-			info('get_obj_props: ke was None')
-			obj.append('ke was None')
+				info('props',props)
 
-		return obj
+				for p in props:
+					self.write('`%s' % (p))
+				self.write('\n')				
 
-	def str_to_class(self, s):
-		''' Return a class with name s. '''
-		return getattr(sys.modules[__name__], s)
+				for k in kinds:
+					content = eval(k.content)
+					pos = 1
+					for i in content:
+						self.write('`%s' % (k.created_on,))
+						if 'cid_' in i[0]:
+							i = i[1]['members'][0]
+						try:# to accomodate an earlier version of storing data in dicts instead of lists
+							self.write('`%s' % (i[0]))
+						except KeyError:
+							self.write('`%s' % (i.keys()[0]))
+						self.write('`%s' % (pos,))
+						for p in props[3:]:
+							try: # to accomodate an earlier version of storing data in dicts instead of lists
+								v = i[1].get(p)
+							except KeyError:
+								v = i.values()[0].get(p)
+							if v and (p == 'excerpt' or p == 'title'): v = ' '.join(v.split())
+							self.write('`%s' % (v))
+						self.write('\n')
+						pos += 1
+				
+			elif kind.kind() == 'Stories':
+				kinds = kind.all().order('-added_on').fetch(limit=int(number))
+
+				props = ['id/keyname']
+				props = props + sorted(kind.properties())
+
+				for p in props:
+					self.write('`%s' % (p))
+				self.write('\n')
+				
+				for k in kinds:
+					for o in self.get_obj_props(k):
+						self.write('`%s' % (o[1]))
+					self.write('\n')
+			else:
+				self.write('Invalid input.\nkind = %s\nnumber=%s' % (kind, number))
 
 class AdminStream(Handler):
 	def get(self):
@@ -216,11 +262,39 @@ class AdminDebug(Handler):
 	def get(self):
 		self.render('admin_debug.html',title=title + ' Debug', active = 'debug')
 
+	def post(self):
+		email = self.request.get('email')
+		content_db = self.request.get('content_db')
+		if email:
+			mail.send_mail(sender = "Admin <clemmerl@gmail.com>",
+						   to = "Lee Clemmer <clemmerl@gmail.com>",
+						   subject = "Email from Enterprise Tech",
+						   body = '''
+						   Hi Lee, this is the plain text version... Boooring.
+						   ''',
+						   html = '''
+						   <div style="background-color:#ccc">
+						   Hello Lee, glad you're getting this email!
+						   <div style="color: red">Isn't it great?!</div>
+						   Yours truly,<br/>
+						   Lee
+						   </div>''')
+			self.render('admin_debug.html',title=title + ' Debug', active = 'debug', status = 'Email sent')
+		elif content_db:
+			contents = Content.all().order('-created_on').fetch(limit=1)
+
+			self.response.headers['Content-Type'] = 'text/text'
+			for c in contents:
+				self.write(self.get_obj_props(c))
+		else:
+			self.render('admin_debug.html',title=title + ' Debug', active = 'debug', status = 'Email NOT send :(')
+
 app = webapp2.WSGIApplication([('/admin/?',AdminMain),
 							   ('/admin/refresh',AdminRefresh),
 							   ('/admin/edit',AdminEdit),
 							   ('/admin/update',AdminUpdate),
 							   ('/admin/lookup',AdminLookup),
+							   ('/admin/download',AdminDownload),
 							   ('/admin/stream',AdminStream),
 							   ('/admin/debug',AdminDebug)], debug=True)
 
