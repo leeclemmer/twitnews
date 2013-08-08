@@ -33,6 +33,25 @@
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</p>
 			<form>
+			{% elif edit %}
+				{% for obj in result %}
+				<form method="post" action="/admin/lookup" id="lookup-edit">
+					<input type="hidden" name="keyname" value="{{ obj[0][1] }}"/>
+					<table class="table table-striped">
+						{% for o in obj %}
+						<tr>
+							<td class="key">{{ o[0] }}</td>
+							{% if o[0] == 'excerpt' or o[0] == 'title' or o[0] == 'image_url' or o[0] == url_full %}
+							<td><input type="text" name="{{ o[0] }}" value="{{ o[1] }}" class="form-control"/></td>
+							{% else %}
+							<td>{{ o[1] }}</td>
+							{% endif %}
+						</tr>
+						{% endfor %}
+					</table>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+				{% endfor %}
 			{% else %}
 				{% for obj in result %}
 					<table class="table table-striped">
@@ -43,7 +62,16 @@
 						</tr>
 						{% endfor %}
 					</table>
-					<form method="post" action="/admin/edit">
+
+
+					<form method="get" action="/admin/lookup" class="lookup-form">
+						<input type="hidden" name="keyname" value="{{ obj[0][1] }}"/>
+						<input type="hidden" name="edit" value="1" />
+						<input type="hidden" name="kind" value="{{ kind }}"/>
+						<button type="submit" class="btn btn-warning">Edit</button>
+					</form>
+ 
+					<form method="post" action="/admin/edit" class="lookup-form">
 						<input type="hidden" name="blocked-{{ obj[0][1] }}" value="on">
 						<button type="submit" class="btn btn-danger">Block</button>
 					</form>

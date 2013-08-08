@@ -55,7 +55,9 @@ def refreshPage():
 			members = {}
 			for member in top_links[tl]['members']:
 				members.update(member)
-			top_links[tl]['members'] = sort_links(members)
+			top_links[tl]['members'] = sort_links(members, sortby = 'votes')
+
+	info("top_links", top_links)
 	top_links = sort_links(top_links)
 	top_links = top_links[:config.NUMHEADLINES]
 
@@ -68,13 +70,16 @@ def refreshPage():
 	# Set memcache
 	memcache.set('latest_content',latest,time=360)
 
-def sort_links(l):
+def sort_links(l, sortby = 'score'):
 	''' Takes list of links l in form of {'id':{key:value,...},...}
 	and returns a sorted list in form of [[id,[prop,val]],[id,...],...].
 	Also adds domain attribute.'''
 	# Sort links
 	l = [[k,v] for k,v in l.items()]
-	l = sorted(l, key=lambda x: x[1]['score'],reverse=True)
+	if sortby == 'votes':
+		l = sorted(l, key=lambda x: x[1]['votes'],reverse=True)
+	else:
+		l = sorted(l, key=lambda x: x[1]['score'],reverse=True)		
 	for i in l:
 		if i[1].get('url_full'): i[1]['domain'] = utils.domain(i[1]['url_full'])
 		else: i[1]['domain'] = ''

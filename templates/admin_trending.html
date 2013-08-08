@@ -1,0 +1,111 @@
+{% extends "admin_base.html" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block main %}
+	<h1>Trending</h1>
+	{% if status %}
+		<p class="text-info">{{ status | safe }}</p>
+	{% endif %}
+	
+	<ul class="stories">
+	{% for top_link in top_links %}
+		{% if 'cid_' in top_link[0] %}
+			<li id="{{top_link[0]}}">
+				<div class='count'>Cluster Score {{'%.1f' % (top_link[1]['score'])}}</div>
+				<ul class="cluster">
+				{% for top_link in top_link[1]['members'] %}
+					<li id="{{ top_link[0] }}" class="story">
+						{% if top_link[1]['image_url'] %}
+						<div class="story-img">
+							<img src="{{ top_link[1]['image_url'] }}"/>
+						</div>
+						{% endif %}
+						
+						<h2 class="story-title">
+							<a href="{{top_link[1]['url_full']}}" target="_blank">{{top_link[1]['title']}}</a>
+						</h2>
+						
+						<div class="excerpt">
+						{% if top_link[1]['excerpt'] %}
+								{{ top_link[1]['excerpt'] }}
+						{% else %}
+								No excerpt.
+						{% endif %}
+						</div>
+
+						<div class="story-meta">
+							<span class="story-count">
+								{{'%.1f' % (top_link[1]['score'])}} | 
+							</span>
+
+							<a class="story-mentions" href="https://twitter.com/search?q={{top_link[1]['title']}}">
+								{{top_link[1]['votes']}} mentions
+							</a> | 
+							
+							<span class="story-domain">
+								{{top_link[1]['domain']}} | 
+							</span>
+
+							<a class="story-id" href="/admin/lookup?edit=1&kind=Stories&keyname=
+								{{ top_link[0] }}">
+								Edit
+							</a> | 
+
+							<form method="post" action="/admin/edit">
+								<input type="hidden" name="blocked-{{ top_link[0] }}" value="on">
+								<button type="submit" class="btn btn-danger">Block</button>
+							</form>
+						</div>
+					</li>
+				{% endfor %}
+				</ul>					
+			</li>
+		{% else %}
+		<li id="{{ top_link[0] }}" class="story">
+			{% if top_link[1]['image_url'] %}
+			<div class="story-img">
+				<img src="{{ top_link[1]['image_url'] }}"/>
+			</div>
+			{% endif %}
+			
+			<h2 class="story-title">
+				<a href="{{top_link[1]['url_full']}}" target="_blank">{{top_link[1]['title']}}</a>
+			</h2>
+			
+			<div class="excerpt">
+			{% if top_link[1]['excerpt'] %}
+					{{ top_link[1]['excerpt'] }}
+			{% else %}
+					No excerpt.
+			{% endif %}
+			</div>
+
+			<div class="story-meta">
+				<span class="story-count">
+					{{'%.1f' % (top_link[1]['score'])}} | 
+				</span>
+
+				<a class="story-mentions" href="https://twitter.com/search?q={{top_link[1]['title']}}">
+					{{top_link[1]['votes']}} mentions
+				</a> | 
+				
+				<span class="story-domain">
+					{{top_link[1]['domain']}} | 
+				</span>
+
+				<a class="story-id" href="/admin/lookup?edit=1&kind=Stories&keyname=
+					{{ top_link[0] }}">
+					Edit
+				</a> | 
+
+				<form method="post" action="/admin/edit">
+					<input type="hidden" name="blocked-{{ top_link[0] }}" value="on">
+					<button type="submit" class="btn btn-danger">Block</button>
+				</form>
+			</div>
+		</li>
+		{% endif %}
+	{% endfor %}
+	</ul>
+{% endblock %}

@@ -13,7 +13,60 @@ title = config.TITLE
 class AdminMain(Handler):
 	def get(self):
 		self.render('admin_main.html',title=title, active = 'admin')
-	pass
+
+class AdminUpdate(Handler):	
+	''' Gets Twitter JSON response and sends batches of URLs
+	(in config.MAXNUMOFURLS increments) as task to urlFetch'''
+	def get(self):
+		if  self.request.get('update'):	
+			output = {'numstatuses':0,
+					  'numtasks':0,
+					  'numurls':0}
+			# So we can check for dupes
+			last_id = memcache.get('last_status_fetched_id')
+
+			# Get Twitter data
+			response = self.getResponse()
+			statuses = []
+			status_times = {} # For time ago strs not in response
+			
+			# Make sure we've got statuses
+			if response[0]:
+				# Get statuses from Twitter response
+				statuses = response[0].get('statuses')
+				output['numstatuses'] = len(statuses)
+				task_urls = []
+
+				# Parse each status
+				for status in statuses:
+					if status['id'] > last_id: # Make sure we only parse new statuses	
+						# Extract URLs from status
+						urls = []
+						if status['entities']['urls']:
+							urls = status['entities']['urls']
+						elif status.get('retweeted_status') and status['retweeted_status']['entities']['urls']:
+							urls = status['retweeted_status']['entities']['urls']
+						
+						if len(urls) > 0:
+							task_urls.append(urls[0]['url'])
+							output['numurls'] += 1
+							if len(task_urls) >= config.MAXNUMOFURLS:
+								output['numtasks'] += 1
+								self.addTask(task_urls)
+								del task_urls[:]
+				output['numtasks'] += 1
+				self.addTask(task_urls)
+				self.render('admin_update.html',title=title + ' Update',statuses=statuses, status='', active = 'update',**output)
+			else: 
+				self.render('admin_update.html',title=title + ' Update',statuses=[], status='No response mate.', active = 'update',**output)
+		else:
+			self.render('admin_update.html',title=title + ' Update', active = 'update')
+
+	def addTask(self, urls):
+		info('Creating new task')
+		if urls: 
+			deferred.defer(urlFetch,urls)
+		else: info('urls list was empty')
 
 class AdminRefresh(Handler):
 	def get(self):
@@ -23,6 +76,17 @@ class AdminRefresh(Handler):
 			deferred.defer(refreshPage)
 			status = 'Page refresh task added'
 		self.render('admin_refresh.html',title=title + ' Refresh',status=status, active = 'refresh')
+
+class AdminTrending(Handler):
+	def get(self):
+		top_links = Content.all().order('-created_on').fetch(limit = 1)
+		top_links = top_links[0].content
+		info('top_links', top_links)
+		if not top_links:
+			self.render('admin_trending.html', title = title + ' Trending', status = 'Memcache empty. <a href="/admin/refresh?refresh=1">Refresh page</a>.', active = 'trending')
+		else:
+			top_links = eval(top_links)
+			self.render('admin_trending.html', title = title + ' Trending', status = '', active = 'trending', top_links = top_links)
 
 class AdminEdit(Handler):
 	def get(self):
@@ -79,72 +143,21 @@ class AdminEdit(Handler):
 
 		self.render('admin_edit_post.html',title=title + ' Edit',status='Items updated. Frontpage being refreshed.',items=items, active = 'edit')
 
-
-class AdminUpdate(Handler):	
-	''' Gets Twitter JSON response and sends batches of URLs
-	(in config.MAXNUMOFURLS increments) as task to urlFetch'''
-	def get(self):
-		if  self.request.get('update'):	
-			output = {'numstatuses':0,
-					  'numtasks':0,
-					  'numurls':0}
-			# So we can check for dupes
-			last_id = memcache.get('last_status_fetched_id')
-
-			# Get Twitter data
-			response = self.getResponse()
-			statuses = []
-			status_times = {} # For time ago strs not in response
-			
-			# Make sure we've got statuses
-			if response[0]:
-				# Get statuses from Twitter response
-				statuses = response[0].get('statuses')
-				output['numstatuses'] = len(statuses)
-				task_urls = []
-
-				# Parse each status
-				for status in statuses:
-					if status['id'] > last_id: # Make sure we only parse new statuses	
-						# Extract URLs from status
-						urls = []
-						if status['entities']['urls']:
-							urls = status['entities']['urls']
-						elif status.get('retweeted_status') and status['retweeted_status']['entities']['urls']:
-							urls = status['retweeted_status']['entities']['urls']
-						
-						if len(urls) > 0:
-							task_urls.append(urls[0]['url'])
-							output['numurls'] += 1
-							if len(task_urls) >= config.MAXNUMOFURLS:
-								output['numtasks'] += 1
-								self.addTask(task_urls)
-								del task_urls[:]
-				output['numtasks'] += 1
-				self.addTask(task_urls)
-				self.render('admin_update.html',title=title + ' Update',statuses=statuses, status='', active = 'update',**output)
-			else: 
-				self.render('admin_update.html',title=title + ' Update',statuses=[], status='No response mate.', active = 'update',**output)
-		else:
-			self.render('admin_update.html',title=title + ' Update', active = 'update')
-
-	def addTask(self, urls):
-		info('Creating new task')
-		if urls: 
-			deferred.defer(urlFetch,urls)
-		else: info('urls list was empty')
-
 class AdminLookup(Handler):
 	def get(self):
 		kind = self.request.get('kind')
 		if kind: kind = self.str_to_class(kind)
 		keyname = self.request.get('keyname')
 		t = self.request.get('title')
+		edit = self.request.get('edit')
 		if kind and keyname:
 			kind_ent = kind.get_by_key_name(keyname)
 			if kind_ent == None:
 				kind_ent = kind.get_by_id(int(keyname))
-			self.render('admin_lookup.html',title=title + ' Lookup',result=[self.get_obj_props(kind_ent)])
+			if edit:
+				self.render('admin_lookup.html',title=title + ' Lookup',result=[self.get_obj_props(kind_ent)], kind = kind.kind(), edit = True)
+			else: 
+				self.render('admin_lookup.html',title=title + ' Lookup',result=[self.get_obj_props(kind_ent)], kind = kind.kind())
 		elif kind and t:
 			kinds = kind.all().fetch(limit=10000)
 			results = []
@@ -154,6 +167,27 @@ class AdminLookup(Handler):
 			self.render('admin_lookup.html',title=title + ' Lookup',result=results, active = 'lookup')
 		else:
 			self.render('admin_lookup.html',title=title + ' Lookup', active = 'lookup')
+
+	def post(self):
+		keyname = self.request.get('keyname')
+		excerpt = self.request.get('excerpt')
+		title = self.request.get('title')
+		image_url = self.request.get('image_url')
+		url_full = self.request.get('url_full')
+
+		story = Stories.get_by_key_name(keyname)
+		if not story:
+			self.render('admin_lookup.html',title=title + ' Lookup', active = 'lookup', status = 'Story not found with keyname %s' % (keyname,))
+		else:
+			info('excerpt, title, image_url, url_full', excerpt, title, image_url, url_full)
+			if excerpt: story.excerpt = excerpt
+			if title: story.title = title
+			if image_url: story.image_url = image_url
+			if url_full: story.url_full
+			story.put()
+			deferred.defer(refreshPage)
+			self.redirect('/admin/lookup?kind=Stories&keyname=%s' % (keyname,))
+
 
 class AdminDownload(Handler):
 	def get(self):
@@ -169,7 +203,7 @@ class AdminDownload(Handler):
 			if kind.kind() == 'Content':
 				kinds = kind.all().order('-created_on').fetch(limit=int(number))
 				props = ['datetime','keyname','position']
-				props = props + sorted(Stories.properties())
+				props = props + sorted(Storihes.properties())
 
 				info('props',props)
 
@@ -260,6 +294,8 @@ class AdminStream(Handler):
 
 class AdminDebug(Handler):
 	def get(self):
+
+		info('top stories',Stories.topStoriesDict())
 		self.render('admin_debug.html',title=title + ' Debug', active = 'debug')
 
 	def post(self):
@@ -293,6 +329,7 @@ app = webapp2.WSGIApplication([('/admin/?',AdminMain),
 							   ('/admin/refresh',AdminRefresh),
 							   ('/admin/edit',AdminEdit),
 							   ('/admin/update',AdminUpdate),
+							   ('/admin/trending',AdminTrending),
 							   ('/admin/lookup',AdminLookup),
 							   ('/admin/download',AdminDownload),
 							   ('/admin/stream',AdminStream),

@@ -63,7 +63,9 @@
 	font-weight: bold;
 }
 
-
+.lookup-form {
+	display: inline;
+}
 
 /*** Stream ***/
 .tw-status {
@@ -118,4 +120,57 @@
 .tw-msg {
 	clear:both;
 	padding-top:10px;
+}
+
+/*** Trending ***/
+ul.stories {
+    list-style-type:none;
+    padding:0;
+}
+
+ul.stories ul.cluster li {
+    background-color:#f0f0f0;
+}
+
+ul.stories ul.cluster {
+    list-style-type:none;
+    padding:0
+}
+
+ul.stories li {
+    background-color:#f9f9f9;
+    padding:18px;
+    margin-bottom:1em;
+}
+
+ul.stories .story-img img {
+    float:left;
+    max-width:150px;
+    max-height:100px;
+    margin-right:20px;
+}
+
+ul.stories h2 {
+    margin-top:0;
+    font-size:1.5em;
+}
+
+ul.stories .story-meta {
+    padding-top:5px;
+    margin-top:5px;
+    border-top:1px dotted #eee;
+}
+
+ul.stories .btn-danger {
+    padding:3px
+}
+
+ul.stories form {
+    display:inline;
+}
+
+ul.stories .count {
+    font-size:1.2em;
+    font-weight:700;
+    padding-bottom:18px
 }

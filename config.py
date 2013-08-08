@@ -21,7 +21,8 @@ WORDSTOINCLUDE = ()
 WORDSTOEXCLUDE = ('sap', 'Sap', 'Amazon.com','Amazon Kindle:','Amazon.co.uk','Temporarily unavailable.',
 				  'Star Trek','Oracle of Delphi','startrek','Instagram','Franzaliscious','social enterprise',
 				  'Careers Center','Job Details','job in','Jobs on CareerBuilder.com','Eluta.ca','TheATLJukebox',
-				  'Jobsite Job Centre','Feedzilla','Enterprise Financial','Bullhorn Reach')
+				  'Jobsite Job Centre','Feedzilla','Enterprise Financial','Bullhorn Reach','Social enterprise',
+				  'Social Enterprise')
 
 # SEARCHCOUNT defines how many search results to fetch from Twitter. Default is 15
 SEARCHCOUNT = 100

@@ -48,9 +48,7 @@ a:hover {
 	}
 
 	.top-row {
-		padding-bottom:37px;
-		margin-bottom:60px;
-		border-bottom: 1px dotted #ccc;
+		margin-bottom:54px;
 	}
 
 	#banner-wrapper {
@@ -92,6 +90,7 @@ a:hover {
 	position: relative;
 	height: 130px;
 	overflow: hidden;
+	background-color: #fff;
 }
 
 .img-responsive {
